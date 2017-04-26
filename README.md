@@ -1,26 +1,48 @@
-# AKTpi
-## buildroot tutorial for a dedicated audio RPi buildroot distro
+# AKTpi - buildroot tutorial for a dedicated audio RPi buildroot distro
 
 This is a basic tutorial on how to roll a dedicated distribution for your own audio projects using buildroot.
 
-[Getting started with buildroot](#getting-started-with-buildroot)
+Content
+* [Getting started with buildroot](#getting-started-with-buildroot)
+* [Configuring buildroot for Raspberry Pi and audio](#configuring-buildroot-for-raspberry-pi-and-audio)
  
 ## Getting started with buildroot 
 
-### buildroot dependencies
-https://buildroot.org/downloads/manual/manual.html#requirement
+[buildroot](https://buildroot.org/) TODO 
 
-for Debian-based (Ubuntu) (~1min)
+### install buildroot dependencies
+*(~1min)*
+buildroot has some dependencies for creating the cross-compiler chain.
 
-sudo apt-get install build-essential
-sudo apt-get install libncurses5-dev
+> See: [https://buildroot.org/downloads/manual/manual.html#requirement](https://buildroot.org/downloads/manual/manual.html#requirement) 
 
-### clone buildroot repo (~1min)
-git clone https://github.com/buildroot/buildroot.git
+On Debian or a Debian-based Distro like Ubuntu you should be fine with:
+
+    sudo apt-get install build-essential libncurses5-dev
+
+### getting buildroot (~1min)
+*(~1min)*
+
+Download the stable version from the [website](https://buildroot.org/).
+
+Or if you want get the newest version via git
+
+    git clone https://github.com/buildroot/buildroot.git
+
+> Note: The latest version sometimes break stuff. If you get an error message through the course of this tutorial. Try a stable branch of the git repo instead.
+
+## Configuring buildroot for Raspberry Pi and audio
+
+buildroot targets a lot of different platforms (e.g. Raspberry Pi, BeagleBone, i386) and provides configuration templates for these.
+In this tutorial we target Raspberry Pi 1 and 3. If you are using an other platform you need to adjust the following steps to your needs. 
 
 ### configure buildroot w/ RPi defaults
-see https://git.busybox.net/buildroot/tree/board/raspberrypi/readme.txt
-make raspberrypi_defconfig
+
+To load the Raspberry Pi 1 template or *defconfig* use:
+
+    make raspberrypi_defconfig
+
+> For details see: [https://git.busybox.net/buildroot/tree/board/raspberrypi/readme.txt](https://git.busybox.net/buildroot/tree/board/raspberrypi/readme.txt)
 
 ### configure packages, etc.
 make menuconfig
