@@ -104,11 +104,13 @@ You can find the image under *output/images/sdcard.img*.
 
 Like in the provided [README](https://git.busybox.net/buildroot/tree/board/raspberrypi/readme.txt) for the Raspberry Pi defconfig, we use the *dd* command to copy the buildroot image to our SD card.
 
-    sudo dd if=output/images/sdcard.img of=*/dev/sdX*
+    sudo dd if=output/images/sdcard.img of=/dev/sd??
 
 > Caution: Make sure to provide the correct device file of your SD card to the *of* parameter.
 
-### adjusting system
+### first start
+
+### USB audio
 modprobe snd_usb ding
 
 ### adjust init
