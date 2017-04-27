@@ -1,6 +1,7 @@
-# AKTpi - buildroot tutorial for a dedicated audio RPi buildroot distro
+# AKTpi - your own RPi audio distro
 
 This is a basic tutorial on how to roll a dedicated distribution for your own audio projects using buildroot.
+Aim: rpi, audio, usb-interface, midi, package (jackcpp)
 
 **Disclaimer: This tutorial is based on the *2017.02.x* branch of buildroot.**
 
@@ -13,7 +14,7 @@ Content
 [buildroot](https://buildroot.org/) TODO buildroot description
 
 ### install buildroot dependencies
-*(~1min)*
+
 buildroot has some dependencies for creating the cross-compiler chain.
 
 > See: [https://buildroot.org/downloads/manual/manual.html#requirement](https://buildroot.org/downloads/manual/manual.html#requirement) 
@@ -23,11 +24,10 @@ On Debian or a Debian-based Distro like Ubuntu you should be fine with:
     sudo apt-get install build-essential libncurses5-dev
 
 ### getting buildroot
-*(~1min)*
 
 Download the stable version from the [website](https://buildroot.org/).
 
-Or if you want get the newest version via git
+Or if you want get the latest version via git
 
     git clone https://github.com/buildroot/buildroot.git
 
@@ -49,33 +49,64 @@ To load the Raspberry Pi 1 template (called *defconfig*) use:
 ### Configuring the system and packages
 
 After making the basic configurations for the target platform, we now can adjust our system to our specific needs.
-For that you can use different types of menues (see the official documentation), but we going to use a console-based one.
+E.g. add or remove packages, configure kernel and sytem, set passwords or change file systems templates.
 
-   make menuconfig
+buildroot provides different front-ends to the configuration process (see the official documentation).
+We are going to use a ncurse-based menu. 
 
-This greets you with this screen. You can use the arrow keys, enter and escape to navigate.
+    make menuconfig
 
 ![menu start](images/menu-00-start.jpg)
 
-#### an audio system
+> Note: The basic configuration already includes ALSA, but we want to include a bit more, i.e. jack and MIDI. These decisions are up to you and your needs. 
 
-The basic configuration already includes ALSA, but we want to include a bit more, i.e. jack and MIDI
-
-To install some of the ALSA tools you need to enable the WCHAR support in the toolchain.
+To install some of the ALSA tools you need to *Enable WCHAR support* in the toolchain.
 
 ![toolchain](images/menu-01-toolchain.png)
-![wchar](images/menu-02-wchar2-wchar.png)
+![wchar](images/menu-02-wchar.png)
 
-Toolchain -> Enable WCHAR support
-Target Packages -> Audio and video applications -> alsa-utils -> alsamixer, amidi
-						jack2
+Next, we are going to add tools for better ALSA and MIDI debugging.
 
-exit and save
+Go to *Target Packages* -> *Audio and video applications* -> *alsa-utils*
 
-### make
-make
+![wchar](images/menu-04-audio.png)
+![wchar](images/menu-05-alsa.png)
 
-### transfer to SD card
+There select *alsamixer*, *amidi*, *aseqdump*, *speaker-test*.
+
+![wchar](images/menu-06-alsa-tools.png)
+
+In the same *Audio and video applications* menu, you can also select *jack2*
+
+![wchar](images/menu-07-jack.png)
+
+Then go back, exit and say yes to save the new configuration.
+
+![wchar](images/menu-08-exit.png)
+
+### make the image
+
+After you finished your configuration, you are now ready to build your system.
+
+> Note: This step can take *several hours*, as buildroot needs to download and compile all the necessary components of your system. 
+
+    make
+
+buildroot will then download all the necessary source code and start the compilation process (cross-compilation toolchain, system, packages).
+
+## The first start
+
+After buildroot is completed, it generates an image file for your SD card. Now is the time to get your SD card and Raspberry Pi ready.
+
+### Transfer image to SD card
+
+You can find the image under *output/images/sdcard.img*.
+
+Like in the provided [README](https://git.busybox.net/buildroot/tree/board/raspberrypi/readme.txt) for the Raspberry Pi defconfig, we use the *dd* command to copy the buildroot image to our SD card.
+
+    sudo dd if=output/images/sdcard.img of=*/dev/sdX*
+
+> Caution: Make sure to provide the correct device file of your SD card to the *of* parameter.
 
 ### adjusting system
 modprobe snd_usb ding
