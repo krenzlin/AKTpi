@@ -108,10 +108,72 @@ Like in the provided [README](https://git.busybox.net/buildroot/tree/board/raspb
 
 > Caution: Make sure to provide the correct device file of your SD card to the *of* parameter.
 
-### first start
+### First Boot 
+
+Some of the configurations for the Raspberry Pi cannot be done within *buildroot* so make sure to checkout the *config.txt* file under the *boot* partition of your SD card.
+Checkout [http://elinux.org/RPiconfig](http://elinux.org/RPiconfig) for further information.
+
+Comment out the *display_overscan*, if you have issues with the display.
+
+    # disable_overscan=1
+
+If you want to use the audio out of the Raspberry Pi, add the following line.
+
+    dtparam=audio=on
+
+> Note: To avoid data corruption after editing files on the SD card, make sure to properly un-mount it.
+
+Now you are ready to put th SD into your Raspberry Pi, connect the HDMI and power cable.
+The Raspberry Pi should now boot up in a few seconds and show a login prompt.
+
+By default *buildroot* adds the user **root** with no password.  
+
+> Note: You can change that in the buildroot configuration.
+
+## Setting up the audio system
+
+### Audio via HDMI or audio jack
+
+To use the the Raspberry Pi's HDMI or audio jack output you first need to load the soundcards kernel module.
+
+    modprobe snd-bcm2835
+
+> Note: Make sure you have the *dtparam=audio=on* line in the *config.txt*.
+
+With the following commands you then can switch between the outputs.
+
+HDMI
+    amixer cset numid=3 2
+
+audio jack
+    amixer cset numid=3 1
+
+To test the audio use for ALSA:
+
+    speaker-test
+
+Or for Jack:
+
+    jack_simple_client
 
 ### USB audio
-modprobe snd_usb ding
+
+To use a class-compilant audio interface via USB you need to load the *snd-usb-audio* kernel module.
+
+    modprobe snd-usb-audio
+
+After that your interface should be available in ALSA.
+
+### MIDI
+
+Connect your MIDI controller via USB. If you previously select *amidi* under *Target packages*, you can use
+
+    amidi -l
+
+to list all the available MIDI controller.
+
+
+
 
 ### adjust init
 
@@ -157,7 +219,6 @@ edit *package/jackcpp/jackcpp.mk*
 
 ### compile tutorial
 
-### add midi
 
 ## Resources
 * [Using *buildroot* for real projects](http://elinux.org/images/2/2a/Using-buildroot-real-project.pdf) (PDF)
