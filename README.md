@@ -117,6 +117,48 @@ modprobe snd_usb ding
 
 ### add jackcpp package
 
+[See buildroot documentation](http://free-electrons.com/~thomas/buildroot/manual/html/ch11.html)
+
+    mkdir package/jackcpp
+
+add *package/jackcpp/Config.in*
+
+    config BR2_PACKAGE_JACKCPP
+        bool "jackcpp"
+        depends on BR2_PACKAGE_JACK2
+        help
+            C++ bindings for jack
+
+            http://www.x37v.info/projects/jackcpp/
+
+
+edit *package/Config.in*
+
+    source "package/jackcpp/Config.in"
+
+edit *package/jackcpp/jackcpp.mk*
+
+    JACKCPP_VERSION = 488554cf57c73a77aeb146a8689c937970e6b1f6
+    JACKCPP_SITE = $(call github,x37v,jackcpp,$(JACKCPP_VERSION))
+    JACKCPP_INSTALL_STAGING = YES
+    JACKCPP_INSTALL_TARGET = NO 
+
+    define JACKCPP_BUILD_CMDS
+        $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D) all
+    endef
+
+    define JACKCPP_INSTALL_STAGING_CMDS
+        $(INSTALL) -D -m 0755 $(@D)/libjackcpp.a $(STAGING_DIR)/usr/lib/libjackcpp.a
+        $(INSTALL) -D -m 0644 $(@D)/include/* $(STAGING_DIR)/usr/include
+    endef
+
+    $(eval $(generic-package))
+
+
 ### compile tutorial
 
 ### add midi
+
+## Resources
+* [Using *buildroot* for real projects](http://elinux.org/images/2/2a/Using-buildroot-real-project.pdf) (PDF)
+
