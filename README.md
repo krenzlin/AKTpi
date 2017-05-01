@@ -140,12 +140,18 @@ To use the the Raspberry Pi's HDMI or audio jack output you first need to load t
 
 > Note: Make sure you have the *dtparam=audio=on* line in the *config.txt*.
 
+Use *aplay* to list the found soundcard(s).
+
+    aplay -l
+
 With the following commands you then can switch between the outputs.
 
 HDMI
+
     amixer cset numid=3 2
 
 audio jack
+
     amixer cset numid=3 1
 
 To test the audio use for ALSA:
