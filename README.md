@@ -20,7 +20,7 @@ Content
 The aim of this tutorial is to create a dedicated audio system for the Raspberry Pi ready to be used on on stage.
 It covers using buildroot to generate an image for the Raspberry Pi, setting up ALSA, Jack and MIDI and compiling your own applications using the generated cross-compilation toolchain of buildroot.
 
-While buildroot makes things relatively easy you still should have a basic knowledge on how to use git, shell and the Linux kernel.
+While buildroot makes things relatively easy you still should have a basic knowledge on how to use git, shell, compilation (e.g. LDFLAGS, CFLAGS) and the Linux kernel.
 
 ## Getting started with buildroot 
 
@@ -203,6 +203,28 @@ After that your interface should be available in ALSA. Check by using:
 
 > Note: The *snd-usb-audio* module is also needed for MIDI via USB.
 
+### jackd
+
+If you selected jack2 in the buildroot configuration you can also try to start the jack daemon.
+
+These examples are taken from the seminars jack startup script.
+
+Onboard sound:
+
+    jackd -dalsa -r44100 -p2048 &
+
+Focusrite:
+
+    jackd -dalsa -d hw:USB -p256  -n3 -r44100 &
+
+Renkforce soundcard used in the seminar.
+
+    jackd -dalsa -d hw:Device -p128 -n2 -r44100 &
+
+To test the jack audio use:
+
+    jack_simple_client
+
 ### MIDI
 
 To use MIDI via USB you need two kernel modules *snd-seq-midi* and *snd-usb-audio*.
@@ -220,17 +242,59 @@ You can test your controller with
 
 If you turn the knobs or press the keys on your controller, the according MIDI notes or CCs should show up.
 
-### adjust init
+### inittab
+
+Instead of systemd or init buildroot uses it simplified version, the */etc/inittab* (see file for further information on how to setup the init scripts)
+If you want to automate the startup of your interface and controller or even start your audio application on boot time you can add them here.
+An easy way to do this, would be to collect all of the above *modprobe*s and jack startup in a single script and start it from within the *inittab*.
+
+For example add a line like this:
+
+    ::sysinit:/bin/sh /media/audio.sh &
+
+> Note: The *inittab* is processed sequentially. So make sure to run blocking commands like jackd in background (i.e. with &)
+
+In *inittab* you can also deactivate consoles, ttys and other services that are started by default. 
 
 ## Compiling your own applications
 
-### compile tutorial
+Getting your own applications to run on your system is the final step in this tutorial. This involves
+
+### Manual compilation
+
+As your target system does not come with a development enviroment you cannot compile your applications on the Raspberry Pi itself. 
+In the process of creating your system, buildroot generates cross-compiler toolchain that you can use to compile for your Raspberry Pi and your system.
+
+The toolchain (e.g. g++, ar, ...) can be found under *buildroot/output/host/usr/bin* and have a prefix similar to 
+
+    arm-linux-*
+
+
+To compile the simple program *example.c* with no libraries involved:
+    
+    buildroot/output/host/usr/bin/arm-linux-g++ example.c -o example
+
+### Running it on the Raspberry Pi
+
+You then can copy the created file *example* onto your SD card, boot up the Raspberry Pi and execute it with 
+
+    ./example
+
+> Note: To copy files to the SD card, you may need superuser privileges. Use *sudo*.
+
+Things get a more complicated if you have dependencies. A command to compile the *sinusoid_example* from the course, would look something like this. Not including copying all the sources of *jackcpp* and *sinusoid* into the folder and editing the paths.
 
     buildroot/output/host/usr/bin/arm-linux-g++ src/jackaudioio.cpp sinusoid.cpp sinusoid_example.cpp -I./include -lpthread -ljack -o example
 
-### Add a package
+> Note: Compiling applications
+
+> Note: If your application needs libraries or programs that are not available in buildroot yet, you should consider writing a package for them (see [Adding a package](#adding-a-package)).
+
+### Adding a package
 
 > **Warning:** This part is currently (April 2017) broken.
+
+buildroot allows to integrate your own or available packages into the buildroot configuration options and build the package for you.
 
 [See buildroot documentation](http://free-electrons.com/~thomas/buildroot/manual/html/ch11.html)
 
