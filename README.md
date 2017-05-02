@@ -16,7 +16,13 @@ Aim: rpi, audio, usb-interface, midi, package (jackcpp)
 
 ## Getting started with buildroot 
 
-[buildroot](https://buildroot.org/) TODO buildroot description
+"Buildroot [...] simplifies and automates the process of building a complete Linux system [...]." [buildroot website](https://buildroot.org/)
+
+buildroot is a set of make files and configurations to 
+
+* default configurations for various target platforms, e.g. Raspberry Pi, Beagle Bone
+* creating a cross-compilation toolchain
+* downloading sources and compiling programs for the target system
 
 ### install buildroot dependencies
 
@@ -261,4 +267,4 @@ Sometimes you just have to bite the bullet and start from scratch. So document e
 
 ## Resources
 * [Using *buildroot* for real projects](http://elinux.org/images/2/2a/Using-buildroot-real-project.pdf) (PDF)
-
+* [buildroot manual](https://buildroot.org/downloads/manual/manual.html)
