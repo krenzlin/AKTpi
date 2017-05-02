@@ -1,14 +1,19 @@
 # AKTpi - your own RPi audio distro
 
 This is a basic tutorial on how to roll a dedicated distribution for your own audio projects using buildroot.
-Aim: rpi, audio, usb-interface, midi, package (jackcpp)
 
 **Disclaimer: This tutorial is based on the *2017.02.x* branch of buildroot.**
 
 Content
+0. [Introduction](#introduction)
 1. [Getting started with buildroot](#getting-started-with-buildroot)
 2. [Configuring buildroot for Raspberry Pi and audio](#configuring-buildroot-for-raspberry-pi-and-audio)
  
+## Introduction
+
+The aim of this tutorial is to create a dedicated audio system for the Raspberry Pi ready to be used on on stage.stage.
+Aim: rpi, audio, usb-interface, midi, package (jackcpp)
+
 ## Getting started with buildroot 
 
 [buildroot](https://buildroot.org/) TODO buildroot description
@@ -128,7 +133,7 @@ The Raspberry Pi should now boot up in a few seconds and show a login prompt.
 
 By default *buildroot* adds the user **root** with no password.  
 
-> Note: You can change that in the buildroot configuration.
+> Note: You can change the users and passwords in the buildroot configuration.
 
 ## Setting up the audio system
 
@@ -183,7 +188,14 @@ to list all the available MIDI controller.
 
 ### adjust init
 
-### add jackcpp package
+
+### compile tutorial
+
+    buildroot/output/host/usr/bin/arm-linux-g++ src/jackaudioio.cpp sinusoid.cpp sinusoid_example.cpp -I./include -lpthread -ljack -o example
+
+### Add a package
+
+> **Warning:** This part is currently (April 2017) broken.
 
 [See buildroot documentation](http://free-electrons.com/~thomas/buildroot/manual/html/ch11.html)
 
@@ -222,9 +234,30 @@ edit *package/jackcpp/jackcpp.mk*
 
     $(eval $(generic-package))
 
+## Troubleshooting
 
-### compile tutorial
+The whole process is very complex, so there will be times when nothing works. These are just some ideas and hints that may help you in your process.
+Sometimes you just have to bite the bullet and start from scratch. So document everything you did!
 
+### buildroot exits with an error.
+
+* Are you on a stable branch of buildroot?
+* Did you add a new package that breaks?
+* Try deleting the misbehaving package from *buildroot/output/build*.
+* Tried?
+    
+    make clean
+
+### Raspberry Pi won't boot.
+
+* Changed the GPU RAM settings?
+* SD card corrupt?
+
+### SD card is corrupted or behaves strange
+
+* Use **sync** heavily.
+* Always unmount your SD card properly.
+* Sometimes you just have to redo the transfer of the image.
 
 ## Resources
 * [Using *buildroot* for real projects](http://elinux.org/images/2/2a/Using-buildroot-real-project.pdf) (PDF)
