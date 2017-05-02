@@ -266,9 +266,7 @@ As your target system does not come with a development enviroment you cannot com
 In the process of creating your system, buildroot generates cross-compiler toolchain that you can use to compile for your Raspberry Pi and your system.
 
 The toolchain (e.g. g++, ar, ...) can be found under *buildroot/output/host/usr/bin* and have a prefix similar to 
-
     arm-linux-*
-
 
 To compile the simple program *example.c* with no libraries involved:
     
@@ -286,8 +284,6 @@ Things get a more complicated if you have dependencies. A command to compile the
 
     buildroot/output/host/usr/bin/arm-linux-g++ src/jackaudioio.cpp sinusoid.cpp sinusoid_example.cpp -I./include -lpthread -ljack -o example
 
-> Note: Compiling applications
-
 > Note: If your application needs libraries or programs that are not available in buildroot yet, you should consider writing a package for them (see [Adding a package](#adding-a-package)).
 
 ### Adding a package
@@ -297,6 +293,8 @@ Things get a more complicated if you have dependencies. A command to compile the
 buildroot allows to integrate your own or available packages into the buildroot configuration options and build the package for you.
 
 [See buildroot documentation](http://free-electrons.com/~thomas/buildroot/manual/html/ch11.html)
+
+#### Generic package
 
     mkdir package/jackcpp
 
