@@ -1,5 +1,7 @@
 # AKTpi - your own RPi audio distro
 
+#### 2017/05/02 - Konrad Krenzlin, Manuel Weber
+
 This is a basic tutorial on how to roll a dedicated distribution for your own audio projects using buildroot.
 
 **Disclaimer: This tutorial is based on the *2017.02.x* branch of buildroot.**
@@ -8,33 +10,39 @@ Content
 0. [Introduction](#introduction)
 1. [Getting started with buildroot](#getting-started-with-buildroot)
 2. [Configuring buildroot for Raspberry Pi and audio](#configuring-buildroot-for-raspberry-pi-and-audio)
+3. [The first start](#the-first-start)
+4. [Audio and MIDI setup](#audio-and-midi-setup)
+5. [Compiling your own application](#compiling-your-own-application)
+5. [Troubleshooting](#troubleshooting)
  
 ## Introduction
 
-The aim of this tutorial is to create a dedicated audio system for the Raspberry Pi ready to be used on on stage.stage.
-Aim: rpi, audio, usb-interface, midi, package (jackcpp)
+The aim of this tutorial is to create a dedicated audio system for the Raspberry Pi ready to be used on on stage.
+It covers using buildroot to generate an image for the Raspberry Pi, setting up ALSA, Jack and MIDI and compiling your own applications using the generated cross-compilation toolchain of buildroot.
+
+While buildroot makes things relatively easy you still should have a basic knowledge on how to use git, shell and the Linux kernel.
 
 ## Getting started with buildroot 
 
 "Buildroot [...] simplifies and automates the process of building a complete Linux system [...]." [buildroot website](https://buildroot.org/)
 
-buildroot is a set of make files and configurations to 
+buildroot is a set of makefiles and configurations for
 
 * default configurations for various target platforms, e.g. Raspberry Pi, Beagle Bone
 * creating a cross-compilation toolchain
-* downloading sources and compiling programs for the target system
+* downloading and compiling sources
 
-### install buildroot dependencies
+### Install buildroot dependencies
 
-buildroot has some dependencies for creating the cross-compiler chain.
+buildroot has some dependencies for creating the cross-compiler toolchain.
 
 > See: [https://buildroot.org/downloads/manual/manual.html#requirement](https://buildroot.org/downloads/manual/manual.html#requirement) 
 
-On Debian or a Debian-based Distro like Ubuntu you should be fine with:
+On Debian or a Debian-based distro like Ubuntu you should be fine with:
 
     sudo apt-get install build-essential libncurses5-dev
 
-### getting buildroot
+### Getting buildroot
 
 Download the stable version from the [website](https://buildroot.org/).
 
@@ -51,9 +59,15 @@ In this tutorial we target Raspberry Pi 1 and 3. If you are using an other platf
 
 ### Loading target platform specific configurations
 
-To load the Raspberry Pi 1 template (called *defconfig*) use:
+To load the Raspberry Pi template (called *defconfig*) use:
+
+**Raspberry Pi A, B, A+, B+**
 
     make raspberrypi_defconfig
+
+**Raspberry Pi 3**
+
+    make raspberrypi3_defconfig
 
 > For details see: [https://git.busybox.net/buildroot/tree/board/raspberrypi/readme.txt](https://git.busybox.net/buildroot/tree/board/raspberrypi/readme.txt)
 
@@ -141,7 +155,9 @@ By default *buildroot* adds the user **root** with no password.
 
 > Note: You can change the users and passwords in the buildroot configuration.
 
-## Setting up the audio system
+## Audio and MIDI setup
+
+To use the Raspberry for your audio application you first want to setup the audio interface(s) and MIDI controller(s).
 
 ### Audio via HDMI or audio jack
 
@@ -159,11 +175,11 @@ Use *aplay* to list the found soundcard(s).
 
 With the following commands you then can switch between the outputs.
 
-HDMI
+*HDMI*
 
     amixer cset numid=3 2
 
-audio jack
+*audio jack*
 
     amixer cset numid=3 1
 
@@ -206,6 +222,7 @@ If you turn the knobs or press the keys on your controller, the according MIDI n
 
 ### adjust init
 
+## Compiling your own applications
 
 ### compile tutorial
 
@@ -262,9 +279,7 @@ Sometimes you just have to bite the bullet and start from scratch. So document e
 * Are you on a stable branch of buildroot?
 * Did you add a new package that breaks?
 * Try deleting the misbehaving package from *buildroot/output/build*.
-* Tried?
-    
-    make clean
+* Tried *make clean*?
 
 ### Raspberry Pi won't boot.
 
@@ -273,7 +288,7 @@ Sometimes you just have to bite the bullet and start from scratch. So document e
 
 ### SD card is corrupted or behaves strange
 
-* Use **sync** heavily.
+* Use *sync* heavily.
 * Always unmount your SD card properly.
 * Sometimes you just have to redo the transfer of the image.
 
