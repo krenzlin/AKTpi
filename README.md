@@ -145,6 +145,8 @@ By default *buildroot* adds the user **root** with no password.
 
 ### Audio via HDMI or audio jack
 
+> Note: Some of the following commands need superuser privileges. So you either login as *root* or use *sudo*.
+
 To use the the Raspberry Pi's HDMI or audio jack output you first need to load the soundcards kernel module.
 
     modprobe snd-bcm2835
@@ -179,18 +181,28 @@ To use a class-compilant audio interface via USB you need to load the *snd-usb-a
 
     modprobe snd-usb-audio
 
-After that your interface should be available in ALSA.
+After that your interface should be available in ALSA. Check by using:
+
+    aplay -l
+
+> Note: The *snd-usb-audio* module is also needed for MIDI via USB.
 
 ### MIDI
 
-Connect your MIDI controller via USB. If you previously select *amidi* under *Target packages*, you can use
+To use MIDI via USB you need two kernel modules *snd-seq-midi* and *snd-usb-audio*.
 
-    amidi -l
+    modprobe snd-seq-midi
+    modprobe snd-usb-audio
 
-to list all the available MIDI controller.
+Then connect your MIDI controller via USB. To list all the available MIDI controllers, use:
 
+    aseqdump -l
 
+You can test your controller with
 
+    aseqdump -p <PORTNUM>
+
+If you turn the knobs or press the keys on your controller, the according MIDI notes or CCs should show up.
 
 ### adjust init
 
