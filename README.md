@@ -2,6 +2,8 @@
 
 **2017/05/02 - Konrad Krenzlin, Manuel Weber**
 
+contact: `aktpi (at) krenzlin.com`
+
 **coursework for "Klangsynthese" by Henrik von Coler @ TU Berlin**
 
 *[Repository at github](https://github.com/krenzlin/AKTpi)*
