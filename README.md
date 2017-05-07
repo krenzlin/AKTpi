@@ -1,14 +1,17 @@
 # AKTpi - your own RPi audio distro
 
 **2017/05/02 - Konrad Krenzlin, Manuel Weber**
+
 **coursework for "Klangsynthese" by Henrik von Coler @ TU Berlin**
+
 *[Repository at github](https://github.com/krenzlin/AKTpi)*
 
-**Disclaimer: This tutorial is based on the *2017.02.x* branch of buildroot.**
+**Disclaimer: This tutorial is based on the *2017.02.x* branch of buildroot. Things might be differen for other version.**
 
 This is a basic tutorial on how to roll a Linux system for your own audio projects using buildroot.
 
 Content
+
 0. [Introduction](#introduction)
 1. [Getting started with buildroot](#getting-started-with-buildroot)
 2. [Configuring buildroot for Raspberry Pi and audio](#configuring-buildroot-for-raspberry-pi-and-audio)
