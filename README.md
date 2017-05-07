@@ -1,10 +1,12 @@
 # AKTpi - your own RPi audio distro
 
-#### 2017/05/02 - Konrad Krenzlin, Manuel Weber
-
-This is a basic tutorial on how to roll a dedicated distribution for your own audio projects using buildroot.
+**2017/05/02 - Konrad Krenzlin, Manuel Weber**
+**coursework for "Klangsynthese" by Henrik von Coler @ TU Berlin**
+*[Repository at github](https://github.com/krenzlin/AKTpi)*
 
 **Disclaimer: This tutorial is based on the *2017.02.x* branch of buildroot.**
+
+This is a basic tutorial on how to roll a Linux system for your own audio projects using buildroot.
 
 Content
 0. [Introduction](#introduction)
@@ -17,7 +19,7 @@ Content
  
 ## Introduction
 
-The aim of this tutorial is to create a dedicated audio system for the Raspberry Pi ready to be used on on stage.
+The aim of this tutorial is to create a dedicated, single-purpose, audio system for the Raspberry Pi ready to be used on on stage.
 It covers using buildroot to generate an image for the Raspberry Pi, setting up ALSA, Jack and MIDI and compiling your own applications using the generated cross-compilation toolchain of buildroot.
 
 While buildroot makes things relatively easy you still should have a basic knowledge on how to use git, shell, compilation (e.g. LDFLAGS, CFLAGS) and the Linux kernel.
@@ -26,15 +28,20 @@ While buildroot makes things relatively easy you still should have a basic knowl
 
 "Buildroot [...] simplifies and automates the process of building a complete Linux system [...]." [buildroot website](https://buildroot.org/)
 
-buildroot is a set of makefiles and configurations for
+Buildroot is a tool that allows to easily create a Linux kernel and root file-system, specialized for embedded computers. 
+It helps with
 
 * default configurations for various target platforms, e.g. Raspberry Pi, Beagle Bone
 * creating a cross-compilation toolchain
 * downloading and compiling sources
 
+As buildroot's philosophy is to avoid complexity, it does not come with a packet manager (e.g. aptitude or pacman).
+New packages can be added by creating configuration files in the buildroot system, but you will have to rebuild the whole system.
+If you need to change or update your system and packages more frequently and less time consuming, have a look at the [openembedded/yocto project](https://www.yoctoproject.org/)!
+
 ### Install buildroot dependencies
 
-buildroot has some dependencies for creating the cross-compiler toolchain.
+Buildroot has some dependencies for creating the cross-compiler toolchain.
 
 > See: [https://buildroot.org/downloads/manual/manual.html#requirement](https://buildroot.org/downloads/manual/manual.html#requirement) 
 
@@ -54,7 +61,7 @@ Or if you want get the latest version via git
 
 ## Configuring buildroot for Raspberry Pi and audio
 
-buildroot targets a lot of different platforms (e.g. Raspberry Pi, BeagleBone, i386) and provides configuration templates for these.
+Buildroot targets a lot of different platforms (e.g. Raspberry Pi, BeagleBone, i386) and provides configuration templates for these.
 In this tutorial we target Raspberry Pi 1 and 3. If you are using an other platform you need to adjust the following steps to your needs. 
 
 ### Loading target platform specific configurations
@@ -76,7 +83,7 @@ To load the Raspberry Pi template (called *defconfig*) use:
 After making the basic configurations for the target platform, we now can adjust our system to our specific needs.
 E.g. add or remove packages, configure kernel and sytem, set passwords or change file systems templates.
 
-buildroot provides different front-ends to the configuration process (see the official documentation).
+Buildroot provides different front-ends to the configuration process (see the official documentation).
 We are going to use a ncurse-based menu. 
 
     make menuconfig
@@ -115,9 +122,14 @@ After you finished your configuration, you are now ready to build your system.
 
 > Note: This step can take *several hours*, as buildroot needs to download and compile all the necessary components of your system. 
 
-    make
+    make 2>&1 | tee build.log
 
-buildroot will then download all the necessary source code and start the compilation process (cross-compilation toolchain, system, packages).
+Buildroot will then download all the necessary source code and start the compilation process (cross-compilation toolchain, system, packages).
+If you want to find out what buildroots actual steps are, use:
+
+    cat build.log | grep ">>>"
+
+> Note: You could just use *make*, but as buildroot prints out a lot of logs it easier to save them to a file for later access.
 
 ## The first start
 
@@ -151,9 +163,27 @@ If you want to use the audio out of the Raspberry Pi, add the following line.
 Now you are ready to put th SD into your Raspberry Pi, connect the HDMI and power cable.
 The Raspberry Pi should now boot up in a few seconds and show a login prompt.
 
+### Login and new users
+
 By default *buildroot* adds the user **root** with no password.  
 
-> Note: You can change the users and passwords in the buildroot configuration.
+#### Adding custom user accounts
+
+You can add custom user accounts in the buildroot configuration with the *BR2_ROOTFS_USERS_TABLES* setting. 
+Go to *System configuration -> Path to the users tables*. 
+
+![menu-user](images/menu-user.png)
+
+Add the path to a file containing the users buildroot should add for you. 
+
+The file should have the following syntax:
+
+|---|---|---|---|---|---|---|---|---|
+|username|uid|group|gid|password|home|shell|groups|comment| 
+
+For example:
+
+    akt -1 wheel -1 =pw /home/akt /bin/sh - this_is_a_comment
 
 ## Audio and MIDI setup
 
@@ -265,12 +295,17 @@ Getting your own applications to run on your system is the final step in this tu
 As your target system does not come with a development enviroment you cannot compile your applications on the Raspberry Pi itself. 
 In the process of creating your system, buildroot generates cross-compiler toolchain that you can use to compile for your Raspberry Pi and your system.
 
-The toolchain (e.g. g++, ar, ...) can be found under *buildroot/output/host/usr/bin* and have a prefix similar to 
+The toolchain (e.g. g++, ar, ...) can be found under *buildroot/output/host/usr/bin* and have an architecture prefix similar to 
+
     arm-linux-*
 
 To compile the simple program *example.c* with no libraries involved:
     
     buildroot/output/host/usr/bin/arm-linux-g++ example.c -o example
+
+Or if you are using *make*, set the *CXX* variable.
+
+    make CXX=output/host/usr/bin/<name-of-architecture>-gcc
 
 ### Running it on the Raspberry Pi
 
@@ -290,7 +325,7 @@ Things get a more complicated if you have dependencies. A command to compile the
 
 > **Warning:** This part is currently (April 2017) broken.
 
-buildroot allows to integrate your own or available packages into the buildroot configuration options and build the package for you.
+Buildroot allows to integrate your own or available packages into the buildroot configuration options and build the package for you.
 
 [See buildroot documentation](http://free-electrons.com/~thomas/buildroot/manual/html/ch11.html)
 
