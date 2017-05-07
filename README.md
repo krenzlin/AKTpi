@@ -52,6 +52,8 @@ On Debian or a Debian-based distro like Ubuntu you should be fine with:
 
     sudo apt-get install build-essential libncurses5-dev
 
+Other system will have different needs.
+
 ### Getting buildroot
 
 Download the stable version from the [website](https://buildroot.org/).
@@ -188,6 +190,18 @@ For example:
 
     akt -1 wheel -1 =pw /home/akt /bin/sh - this_is_a_comment
 
+### Logout and shutdown
+
+To logout use *<Ctrl>+D* or
+
+    logout
+
+To shutdown Raspberry:
+
+    halt
+
+> Note: As the system should only read from and not write to the SD card, it is fairly safe to just pull the USB power.
+
 ## Audio and MIDI setup
 
 To use the Raspberry for your audio application you first want to setup the audio interface(s) and MIDI controller(s).
@@ -289,7 +303,7 @@ For example add a line like this:
 
 In *inittab* you can also deactivate consoles, ttys and other services that are started by default. 
 
-## Compiling your own applications
+## Compiling your own application
 
 Getting your own applications to run on your system is the final step in this tutorial. This involves
 
